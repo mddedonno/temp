@@ -1,0 +1,8 @@
+Host: adb-6353763293941605.5.azuredatabricks.net
+Port: 443
+Default Catalog: external_adventureworksdw
+Default Schema: dbo
+Access token: dapi0058f2788f994cc74dc785ae1554d42f-2
+HTTP Path: /sql/1.0/warehouses/c7e5ec20a8b33209
+Display Name: Databricks
+SSL: off

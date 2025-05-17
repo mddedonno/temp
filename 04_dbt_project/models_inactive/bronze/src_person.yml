@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: person
+    description: "AdventureWorks Person-Daten"
+    database: AdventureWorks_Landing
+    schema: main
+    tables:
+      - name: address
+        identifier: person_address
+
+      - name: countryregion
+        identifier: person_countryregion
+
+      - name: stateprovince
+        identifier: person_stateprovince
+
+      - name: person
+        identifier: person_person

@@ -1,0 +1,82 @@
+SELECT fs.*, dst.* EXCEPT(dst.SalesTerritoryKey, dst.SalesTerritoryImage), dr.* EXCEPT(dr.ResellerKey)
+FROM (
+    SELECT * EXCEPT (rn)
+    FROM (
+        SELECT 
+        "internet" AS SalesType
+        , fis.ProductKey
+        , fis.OrderDateKey
+        , fis.DueDateKey
+        , fis.ShipDateKey
+        , fis.CustomerKey
+        , NULL AS ResellerKey
+        , NULL AS EmployeeKey
+        , fis.PromotionKey
+        , fis.CurrencyKey
+        , fis.SalesTerritoryKey
+        , fis.SalesOrderNumber
+        , fis.SalesOrderLineNumber
+        , fis.RevisionNumber
+        , fis.OrderQuantity
+        , fis.UnitPrice
+        , fis.ExtendedAmount
+        , fis.UnitPriceDiscountPct
+        , fis.DiscountAmount
+        , fis.ProductStandardCost
+        , fis.TotalProductCost
+        , fis.SalesAmount
+        , fis.TaxAmt
+        , fis.Freight
+        , fis.CarrierTrackingNumber
+        , fis.CustomerPONumber
+        , fis.OrderDate
+        , fis.DueDate
+        , fis.ShipDate
+        , NULL AS SalesPerson
+        , dsr.SalesReasonName
+        , ROW_NUMBER() OVER (PARTITION BY fis.salesordernumber, fis.salesorderlinenumber ORDER BY fis.salesordernumber, fis.salesorderlinenumber) AS rn
+        FROM external_adventureworksdw.dbo.factinternetsales fis
+        LEFT JOIN external_adventureworksdw.dbo.factinternetsalesreason fisr
+        ON fis.SalesOrderNumber = fisr.SalesOrderNumber AND fis.SalesOrderLineNumber = fisr.SalesOrderLineNumber
+        LEFT JOIN external_adventureworksdw.dbo.dimsalesreason dsr ON fisr.SalesReasonKey = dsr.SalesReasonKey
+    ) fi
+    WHERE fi.rn = 1 --AND fi.OrderDate <= "2023-12-01"
+    UNION ALL
+    SELECT 
+    "reseller" AS SalesType
+    , frs.ProductKey
+    , frs.OrderDateKey
+    , frs.DueDateKey
+    , frs.ShipDateKey
+    , NULL AS CustomerKey
+    , frs.ResellerKey
+    , frs.EmployeeKey
+    , frs.PromotionKey
+    , frs.CurrencyKey
+    , frs.SalesTerritoryKey
+    , frs.SalesOrderNumber
+    , frs.SalesOrderLineNumber
+    , frs.RevisionNumber
+    , frs.OrderQuantity
+    , frs.UnitPrice
+    , frs.ExtendedAmount
+    , frs.UnitPriceDiscountPct
+    , frs.DiscountAmount
+    , frs.ProductStandardCost
+    , frs.TotalProductCost
+    , frs.SalesAmount
+    , frs.TaxAmt
+    , frs.Freight
+    , frs.CarrierTrackingNumber
+    , frs.CustomerPONumber
+    , frs.OrderDate
+    , frs.DueDate
+    , frs.ShipDate
+    , CONCAT(de.FirstName, " ", de.LastName) AS SalesPerson
+    , NULL AS SalesReasonName
+    FROM external_adventureworksdw.dbo.factresellersales frs
+    LEFT JOIN external_adventureworksdw.dbo.dimemployee de
+    ON frs.EmployeeKey = de.EmployeeKey
+) fs
+LEFT JOIN external_adventureworksdw.dbo.dimsalesterritory dst ON fs.SalesTerritoryKey = dst.SalesTerritoryKey
+LEFT JOIN external_adventureworksdw.dbo.dimreseller dr ON fs.ResellerKey = dr.ResellerKey

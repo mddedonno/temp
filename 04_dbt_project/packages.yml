@@ -1,0 +1,4 @@
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 1.1.1
+    ## Docs: https://hub.getdbt.com/dbt-labs/dbt_utils/latest/
